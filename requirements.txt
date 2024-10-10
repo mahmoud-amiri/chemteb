@@ -1,0 +1,4 @@
+boto3
+mteb
+sentence-transformers
+openai
