@@ -2,3 +2,5 @@ boto3
 mteb
 sentence-transformers
 openai
+datasets
+einops
