@@ -7,9 +7,9 @@ from mteb.abstasks.MultilingualTask import MultilingualTask
 from mteb.abstasks.TaskMetadata import TaskMetadata
 
 
-class CoconutSMILES2Formula1BM(AbsTaskBitextMining, MultilingualTask):
+class CoconutSMILES2FormulaBM(AbsTaskBitextMining, MultilingualTask):
     metadata = TaskMetadata(
-        name="CoconutSMILES2Formula1BM",
+        name="CoconutSMILES2FormulaBM",
         dataset={
             "path": "BASF-We-Create-Chemistry/CoconutSMILES2FormulaBM",
             "revision": "af0913db3a92d4b16ad679733c281b3237d399a5",
