@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-from SDSEyeProtectionClassification import *
-from SDSGlovesClassification import *
-from WikipediaEasy2GeneExpressionVsMetallurgyClassification import *
-from WikipediaEasy2GreenhouseVsEnantiopureClassification import *
-from WikipediaEasy2SolidStateVsColloidalClassification import *
-from WikipediaEasy2SpecialClassification import *
-from WikipediaEasy5Classification import *
-from WikipediaEasy10Classification import *
-from WikipediaEZ2Classification import *
-from WikipediaEZ10Classification import *
-from WikipediaHard2BioluminescenceVsLuminescenceClassification import *
-from WikipediaHard2IsotopesVsFissionProductsNuclearFissionClassification import *
-from WikipediaHard2SaltsVsSemiconductorMaterialsClassification import *
-from WikipediaMedium2BioluminescenceVsNeurochemistryClassification
-from WikipediaMedium2ComputationalVsSpectroscopistsClassification
-from WikipediaMedium2CrystallographyVsChromatographyTitrationpHClassification
-from WikipediaMedium5Classification import *
+from .SDSEyeProtectionClassification import *
+from .SDSGlovesClassification import *
+from .WikipediaEasy2GeneExpressionVsMetallurgyClassification import *
+from .WikipediaEasy2GreenhouseVsEnantiopureClassification import *
+from .WikipediaEasy2SolidStateVsColloidalClassification import *
+from .WikipediaEasy2SpecialClassification import *
+from .WikipediaEasy5Classification import *
+from .WikipediaEasy10Classification import *
+from .WikipediaEZ2Classification import *
+from .WikipediaEZ10Classification import *
+from .WikipediaHard2BioluminescenceVsLuminescenceClassification import *
+from .WikipediaHard2IsotopesVsFissionProductsNuclearFissionClassification import *
+from .WikipediaHard2SaltsVsSemiconductorMaterialsClassification import *
+from .WikipediaMedium2BioluminescenceVsNeurochemistryClassification import *
+from .WikipediaMedium2ComputationalVsSpectroscopistsClassification import *
+from .WikipediaMedium2CrystallographyVsChromatographyTitrationpHClassification import *
+from .WikipediaMedium5Classification import *
