@@ -37,7 +37,7 @@ if __name__ == "__main__":
         "text-embedding-3-small": "1",
         "text-embedding-3-large": "1",
         **{
-            (k, v.revision if v.revision is not None else "no_revision_available")
+            k: v.revision if v.revision is not None else "no_revision_available"
             for k, v in CUSTOM_MODELS.items()
         },
     }
