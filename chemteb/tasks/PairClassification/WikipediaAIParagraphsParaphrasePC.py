@@ -16,7 +16,7 @@ class WikipediaAIParagraphsParaphrasePC(AbsTaskPairClassification):
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
             "path": "BASF-We-Create-Chemistry/WikipediaAIParagraphsParaphrasePC",
-            "revision": "a430437ea6c6fe0e6461e6d6659f647d0bf62496"
+            "revision": "7694661b6e28000d9b2c2376a1bbd49417d279ea",
         },
         type="PairClassification",
         category="p2p",
@@ -32,7 +32,7 @@ class WikipediaAIParagraphsParaphrasePC(AbsTaskPairClassification):
         dialect=None,
         sample_creation="created",
         bibtex_citation=None,
-        descriptive_stats={}
+        descriptive_stats={},
     )
 
     def load_data(self, **kwargs: Any) -> None:

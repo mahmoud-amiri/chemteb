@@ -16,7 +16,7 @@ class PubChemWikiParagraphsPC(AbsTaskPairClassification):
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
             "path": "BASF-We-Create-Chemistry/PubChemWikiParagraphsPC",
-            "revision": "36c2aabe8e5bdb034701d0a226cac3c27d09575c"
+            "revision": "7fb14716e4106b72f51a16e682e5cd2d67e9bd70",
         },
         type="PairClassification",
         category="p2p",
@@ -32,7 +32,7 @@ class PubChemWikiParagraphsPC(AbsTaskPairClassification):
         dialect=None,
         sample_creation="created",
         bibtex_citation=None,
-        descriptive_stats={}
+        descriptive_stats={},
     )
 
     def load_data(self, **kwargs: Any) -> None:
