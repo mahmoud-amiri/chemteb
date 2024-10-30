@@ -1,5 +1,5 @@
 boto3
-mteb
+mteb=1.15.6
 sentence-transformers
 openai
 datasets

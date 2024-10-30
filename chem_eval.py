@@ -44,13 +44,13 @@ if __name__ == "__main__":
 
     now = time.time()
 
-    for model in tqdm(models.keys()):
+    for model_name, revision in tqdm(models.items()):
         evaluation = mteb.MTEB(tasks=[obj() for obj in CHEMICAL_TASKS])
-        if model in CUSTOM_MODELS:
-            model = CUSTOM_MODELS[model].load_model()
-            model.mteb_model_meta = CUSTOM_MODELS[model]
+        if model_name in CUSTOM_MODELS:
+            model = CUSTOM_MODELS[model_name].load_model()
+            model.mteb_model_meta = CUSTOM_MODELS[model_name]
         else:
-            model = mteb.get_model(model)
+            model = mteb.get_model(model_name, revision=revision)
         evaluation.run(model)
 
     elapsed = time.time() - now
