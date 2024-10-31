@@ -15,7 +15,7 @@ class PubChemAISentenceParaphrasePC(AbsTaskPairClassification):
         description="""TBW""",
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
-            "path": "BASF-We-Create-Chemistry/PubChemAISentenceParaphrasePC",
+            "path": "BASF-AI/PubChemAISentenceParaphrasePC",
             "revision": "f33a205966ce032f957c3a22f4f9e378f89a2c56"
         },
         type="PairClassification",

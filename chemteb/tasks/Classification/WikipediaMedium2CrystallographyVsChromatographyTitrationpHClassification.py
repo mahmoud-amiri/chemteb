@@ -12,7 +12,7 @@ class WikipediaMedium2CrystallographyVsChromatographyTitrationpHClassification(
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaMedium2CrystallographyVsChromatographyTitrationpHClassification",
+            "path": "BASF-AI/WikipediaMedium2CrystallographyVsChromatographyTitrationpHClassification",
             "revision": "740565a6a853aaed1114a13bdfd5fd46857b4f11",
         },
         type="Classification",

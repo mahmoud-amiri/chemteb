@@ -11,7 +11,7 @@ class PubChemSMILESCanonDescBM(AbsTaskBitextMining, MultilingualTask):
     metadata = TaskMetadata(
         name="PubChemSMILESCanonDescBM",
         dataset={
-            "path": "BASF-We-Create-Chemistry/PubChemSMILESCanonDescBM",
+            "path": "BASF-AI/PubChemSMILESCanonDescBM",
             "revision": "a721de4af2857bf3cc014b92f013a4f573d9cb00",
         },
         description="TBW",
@@ -41,7 +41,8 @@ class PubChemSMILESCanonDescBM(AbsTaskBitextMining, MultilingualTask):
         self.dataset = {}
 
         for lang in self.hf_subsets:
-            self.dataset[lang] = datasets.load_dataset(**self.metadata_dict["dataset"])
+            self.dataset[lang] = datasets.load_dataset(
+                **self.metadata_dict["dataset"])
 
         self.dataset_transform()
         self.data_loaded = True

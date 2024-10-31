@@ -11,7 +11,7 @@ class WikipediaMedium5Clustering(AbsTaskClustering):
         description="TBW",
         reference="https://huggingface.co/datasets/wikipedia",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaMedium5Clustering",
+            "path": "BASF-AI/WikipediaMedium5Clustering",
             "revision": "7754d8d296f9f4c3af1c6426fab36304730ccddf",
         },
         type="Clustering",

@@ -12,7 +12,7 @@ class WikipediaMedium2BioluminescenceVsNeurochemistryClassification(
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaMedium2BioluminescenceVsNeurochemistryClassification",
+            "path": "BASF-AI/WikipediaMedium2BioluminescenceVsNeurochemistryClassification",
             "revision": "2f68b7d34c2be896e46b14533573b366e59e5aae",
         },
         type="Classification",

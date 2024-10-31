@@ -10,7 +10,7 @@ class WikipediaMedium5Classification(AbsTaskClassification):
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaMedium5Classification",
+            "path": "BASF-AI/WikipediaMedium5Classification",
             "revision": "f81a76a2fb690e5d5bd7a26dd07e85cdf8405dfb",
         },
         type="Classification",

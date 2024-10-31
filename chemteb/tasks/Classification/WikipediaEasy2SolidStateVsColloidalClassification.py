@@ -10,7 +10,7 @@ class WikipediaEasy2SolidStateVsColloidalClassification(AbsTaskClassification):
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaEasy2SolidStateVsColloidalClassification",
+            "path": "BASF-AI/WikipediaEasy2SolidStateVsColloidalClassification",
             "revision": "7d8df44e588b6143d4856c781f72f919fa0599a7",
         },
         type="Classification",

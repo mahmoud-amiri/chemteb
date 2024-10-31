@@ -11,7 +11,7 @@ class CoconutSMILES2FormulaBM(AbsTaskBitextMining, MultilingualTask):
     metadata = TaskMetadata(
         name="CoconutSMILES2FormulaBM",
         dataset={
-            "path": "BASF-We-Create-Chemistry/CoconutSMILES2FormulaBM",
+            "path": "BASF-AI/CoconutSMILES2FormulaBM",
             "revision": "af0913db3a92d4b16ad679733c281b3237d399a5",
         },
         description="TBW",
@@ -41,7 +41,8 @@ class CoconutSMILES2FormulaBM(AbsTaskBitextMining, MultilingualTask):
         self.dataset = {}
 
         for lang in self.hf_subsets:
-            self.dataset[lang] = datasets.load_dataset(**self.metadata_dict["dataset"])
+            self.dataset[lang] = datasets.load_dataset(
+                **self.metadata_dict["dataset"])
 
         self.dataset_transform()
         self.data_loaded = True

@@ -15,7 +15,7 @@ class WikipediaAIParagraphsParaphrasePC(AbsTaskPairClassification):
         description="""TBW""",
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaAIParagraphsParaphrasePC",
+            "path": "BASF-AI/WikipediaAIParagraphsParaphrasePC",
             "revision": "7694661b6e28000d9b2c2376a1bbd49417d279ea",
         },
         type="PairClassification",

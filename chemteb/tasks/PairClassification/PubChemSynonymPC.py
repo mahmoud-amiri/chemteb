@@ -22,7 +22,7 @@ class PubChemSynonymPC(AbsTaskPairClassification):
         description="""TBW""",
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
-            "path": "BASF-We-Create-Chemistry/PubChemSynonymPC",
+            "path": "BASF-AI/PubChemSynonymPC",
             "revision": "5037d69d177c9628fb79cb57eea1299178b28c1b"
         },
         type="PairClassification",

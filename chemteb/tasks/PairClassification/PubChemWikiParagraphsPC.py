@@ -15,7 +15,7 @@ class PubChemWikiParagraphsPC(AbsTaskPairClassification):
         description="""TBW""",
         reference="https://pubchem.ncbi.nlm.nih.gov/",
         dataset={
-            "path": "BASF-We-Create-Chemistry/PubChemWikiParagraphsPC",
+            "path": "BASF-AI/PubChemWikiParagraphsPC",
             "revision": "7fb14716e4106b72f51a16e682e5cd2d67e9bd70",
         },
         type="PairClassification",

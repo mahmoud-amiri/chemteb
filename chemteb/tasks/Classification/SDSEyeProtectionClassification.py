@@ -10,7 +10,7 @@ class SDSEyeProtectionClassification(AbsTaskClassification):
         description="TBW",
         reference="https://www.kaggle.com/datasets/eliseu10/material-safety-data-sheets",
         dataset={
-            "path": "BASF-We-Create-Chemistry/SDSEyeProtectionClassification",
+            "path": "BASF-AI/SDSEyeProtectionClassification",
             "revision": "35cbe5ee544dd26e343238a333de4568e6f77819",
         },
         type="Classification",

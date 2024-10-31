@@ -12,7 +12,7 @@ class WikipediaHard2IsotopesVsFissionProductsNuclearFissionClassification(
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaHard2IsotopesVsFissionProductsNuclearFissionClassification",
+            "path": "BASF-AI/WikipediaHard2IsotopesVsFissionProductsNuclearFissionClassification",
             "revision": "897743346c7c794264f7dbfadc3978aa2895e8e2",
         },
         type="Classification",

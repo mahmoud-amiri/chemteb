@@ -22,7 +22,7 @@ class CoconutSMILES2FormulaPC(AbsTaskPairClassification):
         description="""TBW""",
         reference="https://coconut.naturalproducts.net/",
         dataset={
-            "path": "BASF-We-Create-Chemistry/CoconutSMILES2FormulaPC",
+            "path": "BASF-AI/CoconutSMILES2FormulaPC",
             "revision": "e46d4868e417703bdcf32aadbe5d0e05a1b7f085"
         },
         type="PairClassification",

@@ -10,7 +10,7 @@ class WikipediaEasy2GeneExpressionVsMetallurgyClassification(AbsTaskClassificati
         description="TBW",
         reference="https://wikipedia.org",
         dataset={
-            "path": "BASF-We-Create-Chemistry/WikipediaEasy2GeneExpressionVsMetallurgyClassification",
+            "path": "BASF-AI/WikipediaEasy2GeneExpressionVsMetallurgyClassification",
             "revision": "6ac491e5de9070c6dd434b31e76d3d379123dcff",
         },
         type="Classification",
