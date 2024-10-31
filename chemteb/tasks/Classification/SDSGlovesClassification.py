@@ -10,7 +10,7 @@ class SDSGlovesClassification(AbsTaskClassification):
         description="TBW",
         reference="https://www.kaggle.com/datasets/eliseu10/material-safety-data-sheets",
         dataset={
-            "path": "BASF-We-Create-Chemistry/SmallSDSGlovesClassification",
+            "path": "BASF-We-Create-Chemistry/SDSGlovesClassification",
             "revision": "c723236c5ec417d79512e6104aca9d2cd88168f6",
         },
         type="Classification",
