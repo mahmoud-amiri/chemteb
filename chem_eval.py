@@ -6,6 +6,7 @@ import json
 import time
 from transformers import AutoModel, AutoTokenizer  # ✅ Load models using Hugging Face
 import os
+from sentence_transformers import SentenceTransformer, models
 # from huggingface_hub import login
 # login()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -85,21 +86,13 @@ if __name__ == "__main__":
                 "sentence-transformers/paraphrase-multilingual-mpnet-base-v2": "79f2382ceacceacdf38563d7c5d16b9ff8d725d6",
                 "nomic-ai/nomic-embed-text-v2-moe": "no_revision_available",
                 "BAAI/bge-multilingual": "no_revision_available",
-                "facebook/tart-full-flan-t5-xl": "no_revision_available",
-                "facebook/galactica-1.3b": "no_revision_available",
                 "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract": "no_revision_available",
                 "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext": "no_revision_available",
                 "recobo/chemical-bert-uncased": "no_revision_available",
                 "m3rg-iitd/matscibert": "no_revision_available",
-                "VAMPIRE/PubChemBERT": "no_revision_available",
                 "DeepChem/ChemBERTa-77M-MTR": "no_revision_available",
-                "ncfrey/ChemGPT-4.7M": "no_revision_available",
-                "sebastian-gehrmann/bio-mol-bert": "no_revision_available",
                 "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract": "no_revision_available",
-                "mistralai/Mistral-7B-v0.1": "no_revision_available",
                 "describeai/gemini": "no_revision_available",
-                "Cohere/Cohere-embed-english-v3.0": "no_revision_available",
-                "Cohere/Cohere-embed-multilingual-v3.0": "no_revision_available"
             }
 
     all_tasks = [
@@ -129,11 +122,7 @@ if __name__ == "__main__":
             tokenizer = AutoTokenizer.from_pretrained(model_full_name, token=True, trust_remote_code=True)
             model = AutoModel.from_pretrained(model_full_name, token=True, trust_remote_code=True)
 
-            # ✅ Fix missing PAD token
-            if tokenizer.pad_token is None:
-                tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-                print(f"⚠️ Set PAD token for {model_full_name}")
-
+            
             # ✅ Use correct get_model() syntax
             wrapped_model = mteb.get_model(model_full_name)
 
