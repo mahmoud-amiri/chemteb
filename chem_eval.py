@@ -4,7 +4,11 @@ from tqdm import tqdm
 import wandb
 import json
 import time
-
+from transformers import AutoModel, AutoTokenizer  # ✅ Load models using Hugging Face
+import os
+# from huggingface_hub import login
+# login()
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 def is_run_available(model_name, model_revision):
     api = wandb.Api()
@@ -14,11 +18,9 @@ def is_run_available(model_name, model_revision):
             return True
     return False
 
-
 def read_json(path):
     with open(path, "r") as f:
         return json.load(f)
-
 
 def json_parser(data):
     task_name = data["task_name"]
@@ -34,7 +36,6 @@ def json_parser(data):
     elif task_name.endswith("Clustering"):
         output["Clustering (V Measure)"] = data["scores"]["test"][0]["main_score"]
     return output
-
 
 if __name__ == "__main__":
     now = time.time()
@@ -62,10 +63,10 @@ if __name__ == "__main__":
                 "BAAI/bge-small-en-v1.5": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
                 "BAAI/bge-base-en-v1.5": "a5beb1e3e68b9ab74eb54cfd186867f64f240e1a",
                 "BAAI/bge-large-en-v1.5": "d4aa6901d3a41ba39fb536a557fa166f842b0e09",
-                "all-mpnet-base-v2": "no_revision_available",
-                "multi-qa-mpnet-base-dot-v1": "no_revision_available",
-                "all-MiniLM-L12-v2": "no_revision_available",
-                "all-MiniLM-L6-v2": "no_revision_available",
+                "sentence-transformers/all-mpnet-base-v2": "no_revision_available",
+                "sentence-transformers/multi-qa-mpnet-base-dot-v1": "no_revision_available",
+                "sentence-transformers/all-MiniLM-L12-v2": "no_revision_available",
+                "sentence-transformers/all-MiniLM-L6-v2": "no_revision_available",
                 "m3rg-iitd/matscibert": "no_revision_available",
                 "allenai/specter": "no_revision_available",
                 "facebook/contriever": "no_revision_available",
@@ -82,7 +83,7 @@ if __name__ == "__main__":
                 "sentence-transformers/all-MiniLM-L6-v2": "no_revision_available",
                 "sentence-transformers/all-MiniLM-L12-v2": "no_revision_available",
                 "sentence-transformers/paraphrase-multilingual-mpnet-base-v2": "79f2382ceacceacdf38563d7c5d16b9ff8d725d6",
-                "nomic-ai/nomic-embed-text-multilingual": "no_revision_available",
+                "nomic-ai/nomic-embed-text-v2-moe": "no_revision_available",
                 "BAAI/bge-multilingual": "no_revision_available",
                 "facebook/tart-full-flan-t5-xl": "no_revision_available",
                 "facebook/galactica-1.3b": "no_revision_available",
@@ -115,54 +116,55 @@ if __name__ == "__main__":
     tasks = mteb.get_tasks(tasks=all_tasks)
 
     for model_full_name, model_rev in tqdm(models.items()):
-        if "/" in model_full_name:
-            model_name = model_full_name.split("/")[1]
-        else:
-            model_name = model_full_name
+        model_name = model_full_name.split("/")[-1]
 
         if is_run_available(model_name, model_rev):
             print(f"Skipping {model_name} - {model_rev}")
             continue
 
         try:
-            wandb.init(project='Chembedding - Benchmarking', name=model_name,
-                    config={"revision": model_rev})
-            model = mteb.get_model(model_full_name)
-            # 🔹 Fix for missing padding token
-            if model.tokenizer.pad_token is None:
-                model.tokenizer.pad_token = model.tokenizer.eos_token
-                print(f"Set PAD token for {model_full_name}")
+            wandb.init(project='Chembedding - Benchmarking', name=model_name, config={"revision": model_rev})
+
+            # ✅ Authenticate with Hugging Face for private models
+            tokenizer = AutoTokenizer.from_pretrained(model_full_name, token=True, trust_remote_code=True)
+            model = AutoModel.from_pretrained(model_full_name, token=True, trust_remote_code=True)
+
+            # ✅ Fix missing PAD token
+            if tokenizer.pad_token is None:
+                tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                print(f"⚠️ Set PAD token for {model_full_name}")
+
+            # ✅ Use correct get_model() syntax
+            wrapped_model = mteb.get_model(model_full_name)
+
+            # Run evaluation
             evaluation = mteb.MTEB(tasks=tasks)
-            evaluation.run(model, output_folder="chem_results",
-                        overwrite_results=False)
+            evaluation.run(wrapped_model, output_folder="chem_results", overwrite_results=False)
+
+
         except Exception as e:
             print(f"Error Evaluating Model {model_name}: {e}")
             wandb.finish()
             continue
 
+        # ✅ Logging results to wandb
         for task_name in tqdm(all_tasks):
-            data = read_json(os.path.join(
-                "chem_results",
-                model_full_name.replace("/", "__"),
-                model_rev,
-                task_name + '.json',
-            ))
+            json_path = os.path.join("chem_results", model_full_name.replace("/", "__"), model_rev, f"{task_name}.json")
+            if not os.path.exists(json_path):
+                print(f"Skipping missing results for {task_name} - {model_name}")
+                continue
+
+            data = read_json(json_path)
             output = json_parser(data)
             wandb.log(output)
 
             for metric, score in output.items():
-                table = wandb.Table(data=[[metric, score]],
-                                    columns=["Metric", "Score"])
-                bar_plot = wandb.plot.bar(
-                    table, "Metric", "Score", title=f"{task_name} Performance")
+                table = wandb.Table(data=[[metric, score]], columns=["Metric", "Score"])
+                bar_plot = wandb.plot.bar(table, "Metric", "Score", title=f"{task_name} Performance")
                 wandb.log({f"{task_name}_bar_plot": bar_plot})
 
         wandb.finish()
 
+    # ✅ Print elapsed time in HH:MM:SS format
     elapsed = time.time() - now
-
-    hours = int(elapsed // 3600)
-    minutes = int((elapsed % 3600) // 60)
-    seconds = int(elapsed % 60)
-
-    print(f"Elapsed time: {hours} hours, {minutes} minutes, {seconds} seconds")
+    print(f"Elapsed time: {int(elapsed // 3600)} hours, {int((elapsed % 3600) // 60)} minutes, {int(elapsed % 60)} seconds")
