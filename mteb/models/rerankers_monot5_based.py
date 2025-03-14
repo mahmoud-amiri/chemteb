@@ -296,6 +296,18 @@ monot5_small = ModelMeta(
     open_weights=True,
     revision="77f8e3f7b1eb1afe353aa21a7c3a2fc8feca702e",
     release_date="2022-03-28",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 monot5_base = ModelMeta(
@@ -310,6 +322,18 @@ monot5_base = ModelMeta(
     open_weights=True,
     revision="f15657ab3d2a5dd0b9a30c8c0b6a0a73c9cb5884",
     release_date="2022-03-28",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 monot5_large = ModelMeta(
@@ -324,6 +348,18 @@ monot5_large = ModelMeta(
     open_weights=True,
     revision="48cfad1d8dd587670393f27ee8ec41fde63e3d98",
     release_date="2022-03-28",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 monot5_3b = ModelMeta(
@@ -338,6 +374,18 @@ monot5_3b = ModelMeta(
     open_weights=True,
     revision="bc0c419a438c81f592f878ce32430a1823f5db6c",
     release_date="2022-03-28",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 flant5_base = ModelMeta(
@@ -364,6 +412,17 @@ flant5_base = ModelMeta(
         "quasc": ["train"],
         "qed": ["train"],
     },
+    n_parameters=248_000_000,
+    memory_usage_mb=944,
+    max_tokens=None,
+    embed_dim=768,
+    license="apache-2.0",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=True,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 flant5_large = ModelMeta(
@@ -390,6 +449,17 @@ flant5_large = ModelMeta(
         "quasc": ["train"],
         "qed": ["train"],
     },
+    n_parameters=783_000_000,
+    max_tokens=1024,
+    memory_usage_mb=2987,
+    embed_dim=None,
+    license="apache-2.0",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 flant5_xl = ModelMeta(
@@ -416,6 +486,17 @@ flant5_xl = ModelMeta(
         "quasc": ["train"],
         "qed": ["train"],
     },
+    n_parameters=2_850_000_000,
+    memory_usage_mb=10871,
+    max_tokens=None,
+    embed_dim=2048,
+    license="apache-2.0",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 flant5_xxl = ModelMeta(
@@ -442,6 +523,17 @@ flant5_xxl = ModelMeta(
         "quasc": ["train"],
         "qed": ["train"],
     },
+    n_parameters=11_300_000_000,
+    memory_usage_mb=42980,
+    max_tokens=None,
+    embed_dim=4096,
+    license="apache-2.0",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 
@@ -457,6 +549,18 @@ llama2_7b = ModelMeta(
     open_weights=True,
     revision="01c7f73d771dfac7d292323805ebc428287df4f9",
     release_date="2023-07-18",
+    n_parameters=6_740_000_000,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,  # llama2
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 llama2_7b_chat = ModelMeta(
@@ -471,6 +575,18 @@ llama2_7b_chat = ModelMeta(
     open_weights=True,
     revision="f5db02db724555f92da89c216ac04704f23d4590",
     release_date="2023-07-18",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 mistral_7b = ModelMeta(
@@ -485,6 +601,18 @@ mistral_7b = ModelMeta(
     open_weights=True,
     revision="3ad372fc79158a2148299e3318516c786aeded6c",
     release_date="2023-12-11",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 followir_7b = ModelMeta(
@@ -500,6 +628,17 @@ followir_7b = ModelMeta(
     revision="4d25d437e38b510c01852070c0731e8f6e1875d1",
     release_date="2024-04-29",
     training_datasets={"jhu-clsp/FollowIR-train": ["train"]},
+    n_parameters=7_240_000_000,
+    memory_usage_mb=13813,
+    max_tokens=None,
+    embed_dim=None,
+    license="apache-2.0",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 
@@ -620,6 +759,17 @@ mt5_base_mmarco_v2 = ModelMeta(
     revision="cc0a949b9f21efcaba45c8cabb998ad02ce8d4e7",
     release_date="2022-01-05",
     training_datasets={"msmarco": ["train"]},
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license="mit",
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )
 
 mt5_13b_mmarco_100k = ModelMeta(
@@ -634,4 +784,16 @@ mt5_13b_mmarco_100k = ModelMeta(
     open_weights=True,
     revision="e1a4317e102a525ea9e16745ad21394a4f1bffbc",
     release_date="2022-11-04",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=None,
+    embed_dim=None,
+    license=None,
+    public_training_code=None,
+    public_training_data=None,
+    similarity_fn_name=None,
+    use_instructions=None,
+    training_datasets=None,
+    framework=["PyTorch"],
+    is_cross_encoder=True,
 )

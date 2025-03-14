@@ -7,17 +7,45 @@ import time
 from transformers import AutoModel, AutoTokenizer  # ✅ Load models using Hugging Face
 import os
 from sentence_transformers import SentenceTransformer, models
+from mteb.evaluation.evaluators import RetrievalEvaluator  # ✅ Correct import
+import sys
+from mteb.tasks.Retrieval.eng.FSUChemRxivQest import FSUChemRxivQest
+
+# Ensure the correct MTEB path is added
+sys.path.insert(0, os.path.abspath("./mteb"))
+
+import mteb
+print("Using local MTEB version from:", mteb.__file__)
+
 # from huggingface_hub import login
 # login()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+# def is_run_available(model_name, model_revision):
+#     api = wandb.Api()
+#     runs = api.runs('Chembedding - Benchmarking2')
+#     for run in runs:
+#         if run.name == model_name and run.config['revision'] == model_revision and run.state == "finished":
+#             return True
+#     return False
+
 def is_run_available(model_name, model_revision):
     api = wandb.Api()
-    runs = api.runs('Chembedding - Benchmarking')
+    runs = api.runs('Chembedding - Benchmarking2')
+
+    print(f"🔍 Checking previous runs for {model_name} - {model_revision}")
+
     for run in runs:
-        if run.name == model_name and run.config['revision'] == model_revision and run.state == "finished":
-            return True
-    return False
+        print(f"   ➡ Found run: {run.name}, Revision: {run.config.get('revision', 'N/A')}, State: {run.state}")
+
+        if run.name == model_name and run.config.get('revision') == model_revision and run.state == "finished":
+            print(f"✅ Skipping {model_name} - {model_revision} (Already finished)")
+            return True  # Run already exists
+
+    print(f"🚀 Running {model_name} - {model_revision} (Not found in W&B)")
+    return False  # No completed run found
+
+
 
 def read_json(path):
     with open(path, "r") as f:
@@ -97,26 +125,42 @@ if __name__ == "__main__":
 
     all_tasks = [
         # Retrieval 
-        "ChemNQRetrieval",
-        "ChemHotpotQARetrieval",
-        "CoconutRetrieval"
+        # "ChemNQRetrieval",
+        # "ChemHotpotQARetrieval",
+        # "CoconutRetrieval"
         # "MedicalQARetrieval" ,
         # "SCIDOCS",
-        # "TRECCOVID"
+        # "TRECCOVID",
+        "FSUChemRxivQest"
     ]
 
+    # Get built-in tasks (expects task names)
+    built_in_tasks = mteb.get_tasks(tasks=all_tasks)
 
-    tasks = mteb.get_tasks(tasks=all_tasks)
+    # Initialize custom task separately
+    custom_tasks = [FSUChemRxivQest()]
+
+    # Combine both
+    # Get built-in tasks (returns a tuple)
+    built_in_tasks = mteb.get_tasks(tasks=all_tasks)
+
+    # Convert tuple to list and add custom task
+    tasks = list(built_in_tasks) + [FSUChemRxivQest()]
+
+
+
+
+
 
     for model_full_name, model_rev in tqdm(models.items()):
         model_name = model_full_name.split("/")[-1]
 
-        if is_run_available(model_name, model_rev):
-            print(f"Skipping {model_name} - {model_rev}")
-            continue
+        # if is_run_available(model_name, model_rev):
+        #     print(f"Skipping {model_name} - {model_rev}")
+        #     continue
 
         try:
-            wandb.init(project='Chembedding - Benchmarking', name=model_name, config={"revision": model_rev})
+            wandb.init(project='Chembedding - Benchmarking2', name=model_name, config={"revision": model_rev})
 
             # ✅ Authenticate with Hugging Face for private models
             tokenizer = AutoTokenizer.from_pretrained(model_full_name, token=True, trust_remote_code=True)

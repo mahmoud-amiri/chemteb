@@ -68,7 +68,7 @@ def _model_name_and_revision(
     model_meta = revision_path / "model_meta.json"
     model_path = revision_path.parent
     if not model_meta.exists() and fallback_to_path:
-        logger.warning(
+        logger.info(
             f"model_meta.json not found in {revision_path}, extracting model_name and revision from the path"
         )
         model_name, revision = model_path.name, revision_path.name
@@ -139,6 +139,7 @@ def load_results(
                 continue
             model_name, revision = model_name_and_revision
 
+            model_name = model_name.replace("__", "/")
             if models_to_keep is not None and model_name not in models_to_keep:
                 continue
             elif models_to_keep is not None and models_to_keep[model_name] is not None:

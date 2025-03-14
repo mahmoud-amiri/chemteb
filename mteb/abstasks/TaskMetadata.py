@@ -3,19 +3,16 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Mapping
-from datetime import date
 from pathlib import Path
-from typing import Annotated, Any, Union
+from typing import Any, Union
 
 from pydantic import (
-    AnyUrl,
     BaseModel,
-    BeforeValidator,
-    TypeAdapter,
     field_validator,
 )
 from typing_extensions import Literal, TypedDict
 
+from ..custom_validators import LICENSES, MODALITIES, STR_DATE, STR_URL
 from ..encoder_interface import PromptType
 from ..languages import (
     ISO_LANGUAGE_SCRIPT,
@@ -31,6 +28,7 @@ TASK_SUBTYPE = Literal[
     "Dialect pairing",
     "Dialog Systems",
     "Discourse coherence",
+    "Duplicate Image Retrieval",
     "Language identification",
     "Linguistic acceptability",
     "Political classification",
@@ -47,7 +45,17 @@ TASK_SUBTYPE = Literal[
     "Counterfactual Detection",
     "Emotion classification",
     "Reasoning as Retrieval",
+    "Rendered Texts Understanding",
+    "Image Text Retrieval",
+    "Object recognition",
+    "Scene recognition",
+    "Caption Pairing",
+    "Emotion recognition",
+    "Textures recognition",
+    "Activity recognition",
+    "Tumor detection",
     "Duplicate Detection",
+    "Rendered semantic textual similarity",
 ]
 
 TASK_DOMAIN = Literal[
@@ -55,6 +63,7 @@ TASK_DOMAIN = Literal[
     "Blog",
     "Constructed",
     "Encyclopaedic",
+    "Engineering",
     "Fiction",
     "Government",
     "Legal",
@@ -64,6 +73,7 @@ TASK_DOMAIN = Literal[
     "Poetry",
     "Religious",
     "Reviews",
+    "Scene",
     "Social",
     "Spoken",
     "Subtitles",
@@ -71,6 +81,9 @@ TASK_DOMAIN = Literal[
     "Written",
     "Programming",
     "Chemistry",
+    "Financial",
+    "Chemistry",
+    "Financial",
 ]
 
 SAMPLE_CREATION_METHOD = Literal[
@@ -82,9 +95,26 @@ SAMPLE_CREATION_METHOD = Literal[
     "machine-translated and verified",
     "machine-translated and localized",
     "LM-generated and verified",
+    "rendered",
+    "multiple",
 ]
 
-TASK_TYPE = Literal[
+MIEB_TASK_TYPE = (
+    "Any2AnyMultiChoice",
+    "Any2AnyRetrieval",
+    "Any2AnyMultilingualRetrieval",
+    "VisionCentric",
+    "ImageClustering",
+    "ImageClassification",
+    "ImageMultilabelClassification",
+    "DocumentUnderstanding",
+    "VisualSTS(eng)",
+    "VisualSTS(multi)",
+    "ZeroShotClassification",
+    "Compositionality",
+)
+
+TASK_TYPE = (
     "BitextMining",
     "Classification",
     "MultilabelClassification",
@@ -96,12 +126,24 @@ TASK_TYPE = Literal[
     "Summarization",
     "InstructionRetrieval",
     "Speed",
-]
+) + MIEB_TASK_TYPE
+
+TASK_TYPE = Literal[TASK_TYPE]
+
 
 TASK_CATEGORY = Literal[
     "s2s",  # Sentence-to-sentence
     "s2p",  # Sentence-to-paragraph
     "p2p",  # Paragraph-to-paragraph
+    "t2t",  # specifically for text-only tasks in mieb
+    "i2i",  # image-to-image
+    "i2t",  # image-to-text
+    "t2i",  # text-to-image
+    "it2t",  # image+text-to-text
+    "it2i",  # image+text-to-image
+    "i2it",  # image-to-image+text
+    "t2it",  # text-to-image+text
+    "it2it",  # image+text-to-image+text
 ]
 
 ANNOTATOR_TYPE = Literal[
@@ -111,16 +153,6 @@ ANNOTATOR_TYPE = Literal[
     "LM-generated",
     "LM-generated and reviewed",  # reviewed by humans
 ]
-
-http_url_adapter = TypeAdapter(AnyUrl)
-STR_URL = Annotated[
-    str, BeforeValidator(lambda value: str(http_url_adapter.validate_python(value)))
-]  # Allows the type to be a string, but ensures that the string is a URL
-
-pastdate_adapter = TypeAdapter(date)
-STR_DATE = Annotated[
-    str, BeforeValidator(lambda value: str(pastdate_adapter.validate_python(value)))
-]  # Allows the type to be a string, but ensures that the string is a valid date
 
 SPLIT_NAME = str
 HFSubset = str
@@ -145,33 +177,6 @@ PROGRAMMING_LANGS = [
     "sql",
 ]
 
-LICENSES = (  # this list can be extended as needed
-    Literal[  # we use lowercase for the licenses similar to the huggingface datasets
-        "not specified",  # or none found
-        "mit",
-        "cc-by-2.0",
-        "cc-by-3.0",
-        "cc-by-4.0",
-        "cc-by-sa-3.0",
-        "cc-by-sa-4.0",
-        "cc-by-nc-4.0",
-        "cc-by-nc-sa-3.0",
-        "cc-by-nc-sa-4.0",
-        "cc-by-nc-nd-4.0",
-        "openrail",
-        "openrail++",
-        "odc-by",
-        "afl-3.0",
-        "apache-2.0",
-        "cc-by-nd-2.1-jp",
-        "cc0-1.0",
-        "bsd-3-clause",
-        "gpl-3.0",
-        "cdla-sharing-1.0",
-        "mpl-2.0",
-    ]
-)
-
 METRIC_NAME = str
 METRIC_VALUE = Union[int, float, dict[str, Any]]
 
@@ -192,6 +197,9 @@ class DescriptiveStatistics(TypedDict):
     """Class for descriptive statistics."""
 
     pass
+
+
+METRIC_VALUE = Union[int, float, dict[str, Any]]
 
 
 logger = logging.getLogger(__name__)
@@ -226,15 +234,16 @@ class TaskMetadata(BaseModel):
             "machine-translated and localized".
         prompt: The prompt used for the task. Can be a string or a dictionary containing the query and passage prompts.
         bibtex_citation: The BibTeX citation for the dataset. Should be an empty string if no citation is available.
+        adapted_from: Datasets adapted (translated, sampled from, etc.) from other datasets.
     """
 
-    dataset: dict
+    dataset: dict[str, Any]
 
     name: str
     description: str
     prompt: str | PromptDict | None = None
     type: TASK_TYPE
-    modalities: list[Literal["text"]] = ["text"]
+    modalities: list[MODALITIES] = ["text"]
     category: TASK_CATEGORY | None = None
     reference: STR_URL | None = None
 
@@ -252,6 +261,7 @@ class TaskMetadata(BaseModel):
 
     sample_creation: SAMPLE_CREATION_METHOD | None = None
     bibtex_citation: str | None = None
+    adapted_from: list[str] | None = None
 
     def validate_metadata(self) -> None:
         self.dataset_path_is_specified(self.dataset)
@@ -336,6 +346,15 @@ class TaskMetadata(BaseModel):
             )
 
     @property
+    def bcp47_codes(self) -> list[ISO_LANGUAGE_SCRIPT]:
+        """Return the languages and script codes of the dataset formatting in accordance with the BCP-47 standard."""
+        if isinstance(self.eval_langs, dict):
+            return sorted(
+                {lang for langs in self.eval_langs.values() for lang in langs}
+            )
+        return sorted(set(self.eval_langs))
+
+    @property
     def languages(self) -> list[str]:
         """Return the languages of the dataset as iso639-3 codes."""
 
@@ -366,7 +385,7 @@ class TaskMetadata(BaseModel):
         return all(
             getattr(self, field_name) is not None
             for field_name in self.model_fields
-            if field_name != "prompt"
+            if field_name not in ["prompt", "adapted_from"]
         )
 
     @property
@@ -403,9 +422,11 @@ class TaskMetadata(BaseModel):
     def descriptive_stat_path(self) -> Path:
         """Return the path to the descriptive statistics file."""
         descriptive_stat_base_dir = Path(__file__).parent.parent / "descriptive_stats"
+        if self.type in MIEB_TASK_TYPE:
+            descriptive_stat_base_dir = descriptive_stat_base_dir / "Image"
+        task_type_dir = descriptive_stat_base_dir / self.type
         if not descriptive_stat_base_dir.exists():
             descriptive_stat_base_dir.mkdir()
-        task_type_dir = descriptive_stat_base_dir / self.type
         if not task_type_dir.exists():
             task_type_dir.mkdir()
         return task_type_dir / f"{self.name}.json"
@@ -421,8 +442,12 @@ class TaskMetadata(BaseModel):
         for subset, subset_value in stats.items():
             if subset == "hf_subset_descriptive_stats":
                 continue
-            n_samples[subset] = subset_value["num_samples"]
+            n_samples[subset] = subset_value["num_samples"]  # type: ignore
         return n_samples
 
     def __hash__(self) -> int:
         return hash(self.model_dump_json())
+
+    @property
+    def revision(self) -> str:
+        return self.dataset["revision"]

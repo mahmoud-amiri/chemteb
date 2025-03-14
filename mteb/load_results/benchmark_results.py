@@ -3,17 +3,22 @@ from __future__ import annotations
 import json
 import warnings
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any, Callable, Literal
 
 import numpy as np
 import pandas as pd
 from packaging.version import InvalidVersion, Version
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from mteb.abstasks.AbsTask import AbsTask, ScoresDict
-from mteb.abstasks.TaskMetadata import ISO_LANGUAGE_SCRIPT, TASK_DOMAIN, TASK_TYPE
+from mteb.abstasks.TaskMetadata import (
+    ISO_LANGUAGE_SCRIPT,
+    TASK_DOMAIN,
+    TASK_TYPE,
+)
+from mteb.custom_validators import MODALITIES
 from mteb.languages import ISO_LANGUAGE
 from mteb.load_results.task_results import TaskResult
 from mteb.models.overview import get_model_metas
@@ -26,6 +31,9 @@ class ModelResult(BaseModel):
     model_name: str
     model_revision: str | None
     task_results: list[TaskResult]
+    default_modalities: list[MODALITIES] = Field(
+        default_factory=lambda: ["text"], alias="modalities"
+    )
     model_config = ConfigDict(
         protected_namespaces=(),
     )
@@ -47,6 +55,7 @@ class ModelResult(BaseModel):
         languages: list[str] | None = None,
         domains: list[TASK_DOMAIN] | None = None,
         task_types: list[TASK_TYPE] | None = None,
+        modalities: list[MODALITIES] | None = None,
     ) -> ModelResult:
         new_task_results = []
         for task_result in self.task_results:
@@ -62,6 +71,10 @@ class ModelResult(BaseModel):
                     continue
             if (task_types is not None) and (task_result.task_type not in task_types):
                 continue
+            if modalities is not None:
+                task_modalities = getattr(task_result, "modalities", [])
+                if not any(modality in task_modalities for modality in modalities):
+                    continue
             new_task_results.append(task_result)
         return type(self).model_construct(
             model_name=self.model_name,
@@ -69,7 +82,7 @@ class ModelResult(BaseModel):
             task_results=new_task_results,
         )
 
-    def select_tasks(self, tasks: list[AbsTask]) -> ModelResult:
+    def select_tasks(self, tasks: Sequence[AbsTask]) -> ModelResult:
         task_name_to_task = {task.metadata.name: task for task in tasks}
         new_task_results = [
             task_res.validate_and_filter_scores(task_name_to_task[task_res.task_name])
@@ -105,15 +118,15 @@ class ModelResult(BaseModel):
                 try:
                     if use_fast:
                         scores[res.task_name] = res.get_score_fast(
-                            splits=splits,
-                            languages=languages,
+                            splits=splits,  # type: ignore
+                            languages=languages,  # type: ignore
                         )
                     else:
                         scores[res.task_name] = res.get_score(
                             splits=splits,
                             languages=languages,
-                            aggregation=aggregation,
-                            getter=getter,
+                            aggregation=aggregation,  # type: ignore
+                            getter=getter,  # type: ignore
                             scripts=scripts,
                         )
                 except Exception as e:
@@ -182,6 +195,16 @@ class ModelResult(BaseModel):
     def task_names(self) -> list[str]:
         return [task_res.task_name for task_res in self.task_results]
 
+    @property
+    def modalities(self) -> list[str]:
+        mods = []
+        for task_res in self.task_results:
+            task_modalities = getattr(task_res, "modalities", [])
+            mods.extend(task_modalities)
+        if not mods:
+            mods = self.default_modalities
+        return list(set(mods))
+
 
 class BenchmarkResults(BaseModel):
     model_results: list[ModelResult]
@@ -202,6 +225,7 @@ class BenchmarkResults(BaseModel):
         languages: list[str] | None = None,
         domains: list[TASK_DOMAIN] | None = None,
         task_types: list[TASK_TYPE] | None = None,
+        modalities: list[MODALITIES] | None = None,
     ) -> BenchmarkResults:
         model_results = [
             res.filter_tasks(
@@ -209,6 +233,7 @@ class BenchmarkResults(BaseModel):
                 languages=languages,
                 domains=domains,
                 task_types=task_types,
+                modalities=modalities,
             )
             for res in self.model_results
         ]
@@ -216,7 +241,7 @@ class BenchmarkResults(BaseModel):
             model_results=[res for res in model_results if res.task_results]
         )
 
-    def select_tasks(self, tasks: list[AbsTask]) -> BenchmarkResults:
+    def select_tasks(self, tasks: Sequence[AbsTask]) -> BenchmarkResults:
         new_model_results = [
             model_res.select_tasks(tasks) for model_res in self.model_results
         ]
@@ -259,9 +284,24 @@ class BenchmarkResults(BaseModel):
                 return None
 
         def keep_best(group: pd.DataFrame) -> pd.DataFrame:
+            # Filtering out task_results where no scores are present
+            group = group[group["has_scores"]]
             is_main_revision = group["revision"] == group["main_revision"]
-            if is_main_revision.sum() == 1:
-                return group[is_main_revision]
+            # If the main revision is present we select that
+            if is_main_revision.sum() > 0:
+                return group[is_main_revision].head(n=1)
+            unique_revisions = group["revision"].unique()
+
+            # ensure None/NA/"external" revisions is filtered out
+            group["revision"][group["revision"].isna()] = "no_revision_available"
+            group["revision"][group["revision"] == "external"] = "no_revision_available"
+
+            # Filtering out no_revision_available if other revisions are present
+            if (len(unique_revisions) > 1) and (
+                "no_revision_available" in unique_revisions
+            ):
+                group = group[group["revision"] != "no_revision_available"]
+            # If there are any not-NA mteb versions, we select the latest one
             if group["mteb_version"].notna().any():
                 group = group.dropna(subset=["mteb_version"])
                 group = group.sort_values("mteb_version", ascending=False)
@@ -278,8 +318,11 @@ class BenchmarkResults(BaseModel):
                         task_name=task_result.task_name,
                         mteb_version=task_result.mteb_version,
                         task_result=task_result,
+                        has_scores=bool(task_result.scores),
                     )
                 )
+        if not records:
+            return BenchmarkResults.model_construct(model_results=[])
         task_df = pd.DataFrame.from_records(records)
         model_to_main_revision = {
             meta.name: meta.revision for meta in get_model_metas()
@@ -306,8 +349,8 @@ class BenchmarkResults(BaseModel):
         splits: list[Split] | None = None,
         languages: list[ISO_LANGUAGE | ISO_LANGUAGE_SCRIPT] | None = None,
         scripts: list[ISO_LANGUAGE_SCRIPT] | None = None,
-        getter: Callable[[ScoresDict], Score] = None,
-        aggregation: Callable[[list[Score]], Any] = None,
+        getter: Callable[[ScoresDict], Score] | None = None,
+        aggregation: Callable[[list[Score]], Any] | None = None,
         format: Literal["wide", "long"] = "wide",
     ) -> list[dict]:
         entries = []
@@ -382,7 +425,7 @@ class BenchmarkResults(BaseModel):
         return self.model_dump()
 
     @classmethod
-    def from_dict(cls, data: dict) -> TaskResult:
+    def from_dict(cls, data: dict) -> BenchmarkResults:
         return cls.model_validate(data)
 
     def to_disk(self, path: Path | str) -> None:
@@ -431,3 +474,10 @@ class BenchmarkResults(BaseModel):
         for model_res in self.model_results:
             names.extend(model_res.task_names)
         return list(set(names))
+
+    @property
+    def modalities(self) -> list[str]:
+        mod = []
+        for model_res in self.model_results:
+            mod.extend(model_res.modalities)
+        return list(set(mod))

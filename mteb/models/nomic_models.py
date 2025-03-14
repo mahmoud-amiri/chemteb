@@ -13,8 +13,7 @@ from packaging.version import Version
 import mteb
 from mteb.encoder_interface import PromptType
 from mteb.model_meta import ModelMeta
-
-from .sentence_transformer_wrapper import SentenceTransformerWrapper
+from mteb.models.sentence_transformer_wrapper import SentenceTransformerWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +89,84 @@ class NomicWrapper(SentenceTransformerWrapper):
         return emb
 
 
+nomic_training_data = {
+    # https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/data/contrastive_pretrain.yaml
+    # reddit_title_body
+    "RedditClustering": [],
+    "RedditClusteringP2P": [],
+    "RedditClustering.v2": [],
+    "RedditClusteringP2P.v2": [],
+    # amazon_reviews
+    # amazonqa
+    "AmazonPolarityClassification": [],
+    "AmazonReviewsClassification": [],
+    "AmazonCounterfactualClassification": [],
+    # paq
+    # s2orc_citation_titles
+    # s2orc_title_abstract
+    # s2orc_abstract_citation
+    # s2orc_abstract_body
+    # wikianswers
+    # wikipedia
+    "WikipediaRetrievalMultilingual": [],
+    "WikipediaRerankingMultilingual": [],
+    # gooaq
+    # codesearch
+    "CodeSearchNetCCRetrieval": [],
+    "COIRCodeSearchNetRetrieval": [],
+    # yahoo_title_answer
+    # yahoo_qa
+    # yahoo_title_question
+    "YahooAnswersTopicsClassification": [],
+    # agnews
+    # ccnews
+    # npr
+    # eli5
+    # cnn
+    # stackexchange_duplicate_questions
+    # stackexchange_title_body
+    # stackexchange_body_body
+    "StackExchangeClustering.v2": [],
+    "StackExchangeClusteringP2P.v2": [],
+    # sentence_compression
+    # wikihow
+    # altlex
+    # quora
+    "QuoraRetrieval": [],
+    "Quora-NL": [],  # translation not trained on
+    "NanoQuoraRetrieval": [],
+    # simplewiki
+    # squad
+    "FQuADRetrieval": [],
+    # https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/data/finetune_triplets.yaml
+    # msmaro
+    "MSMARCO": ["train"],
+    "MSMARCOHardNegatives": ["train"],
+    "NanoMSMARCORetrieval": ["train"],
+    "mMARCO-NL": ["train"],
+    # nq_triples
+    "NQ": ["train"],
+    "NQHardNegatives": ["train"],
+    "NanoNQRetrieval": ["train"],
+    "NQ-PL": ["train"],  # translation not trained on
+    "NQ-NL": ["train"],  # translation not trained on
+    # nli_triplets
+    # reddit
+    # medi_wiki
+    # medi_stackexchange
+    # medi_flickr
+    # medi_supernli
+    # hotpot
+    "HotPotQA": ["test"],
+    "HotPotQAHardNegatives": ["test"],
+    "HotPotQA-PL": ["test"],  # translated from hotpotQA (not trained on)
+    "HotpotQA-NL": ["test"],  # translated from hotpotQA (not trained on)
+    # fever
+    "FEVER": ["test"],
+    "FEVERHardNegatives": ["test"],
+    "FEVER-NL": ["test"],  # translated, not trained on
+}
+
 # https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/eval/mteb_eval/eval_mteb.py#L142-L159
 model_prompts = {
     "Classification": "classification: ",
@@ -117,7 +194,7 @@ nomic_embed_v1_5 = ModelMeta(
     revision="b0753ae76394dd36bcfb912a46018088bca48be0",
     release_date="2024-02-10",  # first commit
     n_parameters=137_000_000,
-    memory_usage=None,
+    memory_usage_mb=522,
     max_tokens=8192,
     embed_dim=768,
     license="apache-2.0",
@@ -127,6 +204,9 @@ nomic_embed_v1_5 = ModelMeta(
     use_instructions=True,
     adapted_from=None,
     superseded_by=None,
+    public_training_data=None,
+    public_training_code="https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_finetune.yaml",
+    training_datasets=nomic_training_data,
 )
 
 nomic_embed_v1 = ModelMeta(
@@ -143,7 +223,7 @@ nomic_embed_v1 = ModelMeta(
     revision="0759316f275aa0cb93a5b830973843ca66babcf5",
     release_date="2024-01-31",  # first commit
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=522,
     max_tokens=8192,
     embed_dim=768,
     license="apache-2.0",
@@ -153,6 +233,9 @@ nomic_embed_v1 = ModelMeta(
     use_instructions=True,
     adapted_from=None,
     superseded_by="nomic-ai/nomic-embed-text-v1.5",
+    public_training_code="https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_finetune.yaml",
+    training_datasets=nomic_training_data,
+    public_training_data=None,
 )
 
 nomic_embed_v1_ablated = ModelMeta(
@@ -169,7 +252,7 @@ nomic_embed_v1_ablated = ModelMeta(
     revision="7d948905c5d5d3874fa55a925d68e49dbf411e5f",
     release_date="2024-01-15",  # first commit
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=None,
     max_tokens=8192,
     embed_dim=768,
     license="apache-2.0",
@@ -179,8 +262,10 @@ nomic_embed_v1_ablated = ModelMeta(
     use_instructions=True,
     adapted_from=None,
     superseded_by=None,
+    public_training_code="https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_finetune.yaml",
+    training_datasets=nomic_training_data,
+    public_training_data=None,
 )
-
 
 nomic_embed_v1_unsupervised = ModelMeta(
     loader=partial(
@@ -196,7 +281,7 @@ nomic_embed_v1_unsupervised = ModelMeta(
     revision="b53d557b15ae63852847c222d336c1609eced93c",
     release_date="2024-01-15",  # first commit
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=None,
     max_tokens=8192,
     embed_dim=768,
     license="apache-2.0",
@@ -206,6 +291,9 @@ nomic_embed_v1_unsupervised = ModelMeta(
     use_instructions=True,
     adapted_from=None,
     superseded_by=None,
+    public_training_code="https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_finetune.yaml",
+    training_datasets=nomic_training_data,
+    public_training_data=None,
 )
 
 nomic_modern_bert_embed = ModelMeta(
@@ -224,7 +312,7 @@ nomic_modern_bert_embed = ModelMeta(
     revision="5960f1566fb7cb1adf1eb6e816639cf4646d9b12",
     release_date="2024-12-29",
     n_parameters=149_000_000,
-    memory_usage=None,
+    memory_usage_mb=568,
     max_tokens=8192,
     embed_dim=768,
     license="apache-2.0",
@@ -232,6 +320,10 @@ nomic_modern_bert_embed = ModelMeta(
     similarity_fn_name="cosine",
     framework=["Sentence Transformers", "PyTorch"],
     use_instructions=True,
-    adapted_from=None,
+    adapted_from="answerdotai/ModernBERT-base",
+    public_training_code="https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_pretrain_modernbert.yaml",
+    # https://github.com/nomic-ai/contrastors/blob/5f7b461e5a13b5636692d1c9f1141b27232fe966/src/contrastors/configs/train/contrastive_finetune_modernnomic.yaml
     superseded_by=None,
+    training_datasets=nomic_training_data,
+    public_training_data=None,
 )

@@ -32,6 +32,7 @@ _DATASET_COLUMN_MAP = [
     },
 ]
 
+
 class PubChemSMILESPC(AbsTaskPairClassification):
     metadata = TaskMetadata(
         name="PubChemSMILESPC",
@@ -39,7 +40,7 @@ class PubChemSMILESPC(AbsTaskPairClassification):
         reference="https://arxiv.org/abs/2412.00532",
         dataset={
             "path": "BASF-AI/PubChemSMILESPairClassification",
-            "revision": "7ba40b69f5fe6ffe4cc189aac9e1710913c73c8a"
+            "revision": "7ba40b69f5fe6ffe4cc189aac9e1710913c73c8a",
         },
         type="PairClassification",
         category="s2s",
@@ -47,19 +48,29 @@ class PubChemSMILESPC(AbsTaskPairClassification):
         eval_splits=["test"],
         eval_langs=["eng-Latn"],
         main_score="max_ap",
-        date=None,
+        date=("2024-06-01", "2024-11-30"),
         domains=["Chemistry"],
-        task_subtypes=None,
+        task_subtypes=[],
         license="cc-by-nc-sa-4.0",
         annotations_creators="derived",
-        dialect=None,
-        sample_creation=None,
+        dialect=[],
+        sample_creation="created",
         bibtex_citation="""
         @article{kasmaee2024chemteb,
         title={ChemTEB: Chemical Text Embedding Benchmark, an Overview of Embedding Models Performance \& Efficiency on a Specific Domain},
         author={Kasmaee, Ali Shiraee and Khodadad, Mohammad and Saloot, Mohammad Arshi and Sherck, Nick and Dokas, Stephen and Mahyar, Hamidreza and Samiee, Soheila},
         journal={arXiv preprint arXiv:2412.00532},
         year={2024}
+        }
+        @article{kim2023pubchem,
+        title={PubChem 2023 update},
+        author={Kim, Sunghwan and Chen, Jie and Cheng, Tiejun and Gindulyte, Asta and He, Jia and He, Siqian and Li, Qingliang and Shoemaker, Benjamin A and Thiessen, Paul A and Yu, Bo and others},
+        journal={Nucleic acids research},
+        volume={51},
+        number={D1},
+        pages={D1373--D1380},
+        year={2023},
+        publisher={Oxford University Press}
         }
         """,
     )
@@ -72,9 +83,9 @@ class PubChemSMILESPC(AbsTaskPairClassification):
         _hf_dataset = None
         for dataset_col_map in _DATASET_COLUMN_MAP:
             _dataset = datasets.load_dataset(
-                self.metadata_dict["dataset"]["path"],
+                self.metadata.dataset["path"],
                 dataset_col_map["name"],
-                revision=self.metadata_dict["dataset"]["revision"],
+                revision=self.metadata.dataset["revision"],
             )
 
             _dataset = _dataset.rename_columns(
@@ -96,10 +107,12 @@ class PubChemSMILESPC(AbsTaskPairClassification):
         self.dataset_transform()
         self.data_loaded = True
 
-
     def dataset_transform(self):
         self.dataset = self.stratified_subsampling(
-            self.dataset, seed=self.seed, splits=self.metadata_dict["eval_splits"], label="labels"
+            self.dataset,
+            seed=self.seed,
+            splits=self.metadata["eval_splits"],
+            label="labels",
         )
 
         _dataset = {}

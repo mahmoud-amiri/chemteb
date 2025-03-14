@@ -4,6 +4,7 @@ import json
 import logging
 from argparse import Namespace
 from collections import defaultdict
+from collections.abc import Iterable
 from functools import cached_property
 from importlib.metadata import version
 from pathlib import Path
@@ -23,24 +24,6 @@ Score = Any
 logger = logging.getLogger(__name__)
 
 
-# Tasks that were completely removed from the MTEB (we generally don't do this anymore instead we supersede tasks)
-class CQADupstackRetrievalDummy:
-    """A dummy task for loading historic results from before v1.11.0"""
-
-    metadata = Namespace(  # type: ignore
-        name="CQADupstackRetrieval",
-        main_score="ndcg_at_10",
-        type="Retrieval",
-        hf_subsets_to_langscripts={
-            "default": ["eng-Latn"],
-        },
-        dataset={
-            "revision": "revision not applicable",
-            "path": "CQADupstackRetrieval_is_a_combined_dataset",
-        },
-    )
-
-
 class ScalaNbClassificationDummy:
     """A dummy task for loading historic results from before v1.11.0"""
 
@@ -52,6 +35,7 @@ class ScalaNbClassificationDummy:
             "default": ["nob-Latn"],
         },
         dataset={"revision": "revision_not_applicable"},
+        revision="revision_not_applicable",
     )
 
 
@@ -66,6 +50,7 @@ class ScalaNnClassificationDummy:
             "default": ["nno-Latn"],
         },
         dataset={"revision": "revision_not_applicable"},
+        revision="revision_not_applicable",
     )
 
 
@@ -80,6 +65,7 @@ class ScalaDaClassificationDummy:
             "default": ["dan-Latn"],
         },
         dataset={"revision": "revision_not_applicable"},
+        revision="revision_not_applicable",
     )
 
 
@@ -94,11 +80,11 @@ class ScalaSvClassificationDummy:
             "default": ["swe-Latn"],
         },
         dataset={"revision": "revision_not_applicable"},
+        revision="revision_not_applicable",
     )
 
 
 outdated_tasks = {
-    "CQADupstackRetrieval": CQADupstackRetrievalDummy,
     "ScalaNbClassification": ScalaNbClassificationDummy,
     "ScalaNnClassification": ScalaNnClassificationDummy,
     "ScalaDaClassification": ScalaDaClassificationDummy,
@@ -183,7 +169,7 @@ class TaskResult(BaseModel):
                 flat_scores[split].append(_scores)
 
         return TaskResult(
-            dataset_revision=task.metadata.dataset["revision"],
+            dataset_revision=task.metadata.revision,
             task_name=task.metadata.name,
             mteb_version=version("mteb"),
             scores=flat_scores,
@@ -387,15 +373,16 @@ class TaskResult(BaseModel):
         main_score = task.metadata.main_score
         for split, split_score in scores.items():
             for hf_subset, hf_subset_scores in split_score.items():
-                if task.metadata.type == "STS":
-                    for name, prev_name in [
-                        ("cosine", "cos_sim"),
-                        ("manhattan", "manhattan"),
-                        ("euclidean", "euclidean"),
-                    ]:
-                        prev_name_scores = hf_subset_scores.pop(
-                            prev_name, {"spearman": "NaN"}
-                        )
+                for name, prev_name in [
+                    ("cosine", "cos_sim"),
+                    ("manhattan", "manhattan"),
+                    ("euclidean", "euclidean"),
+                    ("dot", "dot"),
+                    ("max", "max"),
+                    ("similarity", "similarity"),
+                ]:
+                    prev_name_scores = hf_subset_scores.pop(prev_name, None)
+                    if prev_name_scores is not None:
                         for k, v in prev_name_scores.items():
                             hf_subset_scores[f"{name}_{k}"] = v
 
@@ -470,10 +457,15 @@ class TaskResult(BaseModel):
 
         return aggregation(values)
 
-    def get_score_fast(self, splits: str | None, languages: str | None) -> float:
+    def get_score_fast(
+        self,
+        splits: Iterable[str] | None = None,
+        languages: str | None = None,
+        subsets: Iterable[str] | None = None,
+    ) -> float:
         """Sped up version of get_score that will be used if no aggregation, script or getter needs to be specified."""
         if splits is None:
-            splits = self.scores
+            splits = self.scores.keys()
         val_sum = 0
         n_val = 0
         for split in splits:
@@ -486,6 +478,13 @@ class TaskResult(BaseModel):
                 main_score = scores.get("main_score", None)
                 if main_score is None:
                     raise ValueError(f"Missing main score for subset: {hf_subset}")
+                if subsets and hf_subset not in subsets:
+                    continue
+                elif subsets:
+                    val_sum += main_score
+                    n_val += 1
+                    continue
+
                 if languages is None:
                     val_sum += main_score
                     n_val += 1
@@ -494,6 +493,7 @@ class TaskResult(BaseModel):
                     if lang.split("-")[0] in languages:
                         val_sum += main_score
                         n_val += 1
+                        logger.info(f"{val_sum=}, {n_val=}")
                         break
         if n_val == 0:
             raise ValueError("No splits had scores for the specified languages.")
@@ -535,14 +535,11 @@ class TaskResult(BaseModel):
 
         if task is None:
             task = get_task(self.task_name)
-        splits = task.metadata.eval_splits
-        if task.is_multilingual:
-            hf_subsets = getattr(
-                task, "hf_subsets", task.metadata.hf_subsets_to_langscripts.keys()
-            )
-            hf_subsets = set(hf_subsets)
-        else:
-            hf_subsets = {"default"}
+
+        splits = task.eval_splits
+        hf_subsets = task.hf_subsets
+        hf_subsets = set(hf_subsets)
+
         new_scores = {}
         seen_splits = set()
         for split in self.scores:

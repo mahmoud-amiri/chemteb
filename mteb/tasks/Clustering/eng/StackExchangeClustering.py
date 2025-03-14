@@ -35,8 +35,8 @@ class StackExchangeClusteringFast(AbsTaskClusteringFast):
         dialect=[],
         sample_creation="found",
         bibtex_citation="""@article{geigle:2021:arxiv,
-        author    = {Gregor Geigle and 
-                        Nils Reimers and 
+        author    = {Gregor Geigle and
+                        Nils Reimers and
                         Andreas R{\"u}ckl{\'e} and
                         Iryna Gurevych},
         title     = {TWEAC: Transformer with Extendable QA Agent Classifiers},
@@ -48,6 +48,7 @@ class StackExchangeClusteringFast(AbsTaskClusteringFast):
         eprint    = {2104.07081}
         }""",
         prompt="Identify the topic or theme of StackExchange posts based on the titles",
+        adapted_from=["StackExchangeClustering"],
     )
 
     def dataset_transform(self):
@@ -87,17 +88,16 @@ class StackExchangeClustering(AbsTaskClustering):
         eval_splits=["test"],
         eval_langs=["eng-Latn"],
         main_score="v_measure",
-        date=None,
-        form=None,
-        domains=None,
-        task_subtypes=None,
-        license=None,
-        annotations_creators=None,
-        dialect=None,
-        sample_creation=None,
+        date=("2021-01-01", "2021-04-14"),
+        domains=["Web", "Written"],
+        task_subtypes=["Thematic clustering"],
+        license="not specified",
+        annotations_creators="derived",
+        dialect=[],
+        sample_creation="found",
         bibtex_citation="""@article{geigle:2021:arxiv,
-        author    = {Gregor Geigle and 
-                        Nils Reimers and 
+        author    = {Gregor Geigle and
+                        Nils Reimers and
                         Andreas R{\"u}ckl{\'e} and
                         Iryna Gurevych},
         title     = {TWEAC: Transformer with Extendable QA Agent Classifiers},

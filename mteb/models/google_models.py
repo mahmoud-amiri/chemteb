@@ -8,8 +8,7 @@ import tqdm
 
 from mteb.encoder_interface import Encoder, PromptType
 from mteb.model_meta import ModelMeta
-
-from .wrapper import Wrapper
+from mteb.models.wrapper import Wrapper
 
 MULTILINGUAL_EVALUATED_LANGUAGES = [
     "arb_Arab",
@@ -40,6 +39,14 @@ MODEL_PROMPTS = {
     "STS": "SIMILARITY",
     PromptType.query.value: "RETRIEVAL_QUERY",
     PromptType.passage.value: "RETRIEVAL_DOCUMENT",
+}
+
+GECKO_TRAINING_DATA = {
+    # Ones that are available from HF.
+    "NQHardNegatives": ["train"],
+    "FEVERHardNegatives": ["train"],
+    "HotpotQAHardNegatives": ["train"],
+    "MIRACLRetrievalHardNegatives": ["train"],
 }
 
 
@@ -145,16 +152,17 @@ google_text_emb_004 = ModelMeta(
     revision="1",  # revision is intended for implementation
     release_date="2024-05-14",
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=None,
     max_tokens=2048,
     embed_dim=768,
     license=None,
-    similarity_fn_name="cosine",  # assumed
+    reference="https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings",
+    similarity_fn_name="cosine",
     framework=["API"],
     use_instructions=True,
-    public_training_data=False,  # assumed
-    public_training_code=False,  # assumed
-    training_datasets=None,
+    public_training_code=None,
+    public_training_data=None,
+    training_datasets=GECKO_TRAINING_DATA,
 )
 
 google_text_emb_005 = ModelMeta(
@@ -169,16 +177,17 @@ google_text_emb_005 = ModelMeta(
     revision="1",  # revision is intended for implementation
     release_date="2024-11-18",
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=None,
     max_tokens=2048,
     embed_dim=768,
     license=None,
-    similarity_fn_name="cosine",  # assumed
+    reference="https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings",
+    similarity_fn_name="cosine",
     framework=["API"],
     use_instructions=True,
-    public_training_data=False,  # assumed
-    public_training_code=False,  # assumed
-    training_datasets=None,
+    public_training_code=None,
+    public_training_data=None,
+    training_datasets=GECKO_TRAINING_DATA,
 )
 
 google_text_multilingual_emb_002 = ModelMeta(
@@ -190,17 +199,43 @@ google_text_multilingual_emb_002 = ModelMeta(
     name="google/text-multilingual-embedding-002",
     languages=MULTILINGUAL_EVALUATED_LANGUAGES,  # From the list of evaluated languages in https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/text-embeddings-api#supported_text_languages
     open_weights=False,
-    revision="1",  # revision is intended for implementation
+    revision="1",
     release_date="2024-05-14",
     n_parameters=None,
-    memory_usage=None,
+    memory_usage_mb=None,
     max_tokens=2048,
     embed_dim=768,
     license=None,
-    similarity_fn_name="cosine",  # assumed
+    reference="https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings",
+    similarity_fn_name="cosine",
     framework=["API"],
     use_instructions=True,
-    public_training_data=False,  # assumed
-    public_training_code=False,  # assumed
-    training_datasets=None,
+    public_training_code=None,
+    public_training_data=None,
+    training_datasets=GECKO_TRAINING_DATA,
+)
+
+google_gemini_embedding_exp_03_07 = ModelMeta(
+    loader=partial(
+        GoogleTextEmbeddingModel,
+        model_name="gemini-embedding-exp-03-07",
+        model_prompts=MODEL_PROMPTS,
+    ),
+    name="google/gemini-embedding-exp-03-07",
+    languages=MULTILINGUAL_EVALUATED_LANGUAGES,
+    open_weights=False,
+    revision="1",
+    release_date="2025-03-07",
+    n_parameters=None,
+    memory_usage_mb=None,
+    max_tokens=8192,
+    embed_dim=3072,
+    license=None,
+    reference="https://developers.googleblog.com/en/gemini-embedding-text-model-now-available-gemini-api/",
+    similarity_fn_name="cosine",
+    framework=["API"],
+    use_instructions=True,
+    public_training_code=None,
+    public_training_data=None,
+    training_datasets=GECKO_TRAINING_DATA,
 )

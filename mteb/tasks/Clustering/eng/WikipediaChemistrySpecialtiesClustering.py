@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+from mteb.abstasks.AbsTaskClustering import AbsTaskClustering
 from mteb.abstasks.TaskMetadata import TaskMetadata
-
-from ....abstasks.AbsTaskClustering import AbsTaskClustering
 
 
 class WikipediaChemistrySpecialtiesClustering(AbsTaskClustering):
@@ -15,18 +14,18 @@ class WikipediaChemistrySpecialtiesClustering(AbsTaskClustering):
             "revision": "7754d8d296f9f4c3af1c6426fab36304730ccddf",
         },
         type="Clustering",
-        category="p2p",
+        category="s2p",
         modalities=["text"],
         eval_splits=["test"],
         eval_langs=["eng-Latn"],
         main_score="v_measure",
-        date=None,
+        date=("2024-06-01", "2024-11-30"),
         domains=["Chemistry"],
         task_subtypes=[],
         license="cc-by-nc-sa-4.0",
-        annotations_creators=None,
+        annotations_creators="derived",
         dialect=[],
-        sample_creation=None,
+        sample_creation="created",
         bibtex_citation="""
         @article{kasmaee2024chemteb,
         title={ChemTEB: Chemical Text Embedding Benchmark, an Overview of Embedding Models Performance \& Efficiency on a Specific Domain},

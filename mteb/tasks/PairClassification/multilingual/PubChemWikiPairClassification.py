@@ -5,18 +5,18 @@ from mteb.abstasks.MultilingualTask import MultilingualTask
 from mteb.abstasks.TaskMetadata import TaskMetadata
 
 _LANGUAGES = {
-    'de': ["deu-Latn", "eng-Latn"],
-    'nl': ["nld-Latn", "eng-Latn"],
-    'zh': ["zho-Hans", "eng-Latn"],
-    'fr': ["fra-Latn", "eng-Latn"],
-    'es': ["spa-Latn", "eng-Latn"],
-    'pt': ["por-Latn", "eng-Latn"],
-    'ms': ["msa-Latn", "eng-Latn"],
-    'ko': ["kor-Hang", "eng-Latn"],
-    'tr': ["tur-Latn", "eng-Latn"],
-    'hi': ["hin-Deva", "eng-Latn"],
-    'cs': ["ces-Latn", "eng-Latn"],
-    'ja': ["jpn-Jpan", "eng-Latn"],
+    "de": ["deu-Latn", "eng-Latn"],
+    "nl": ["nld-Latn", "eng-Latn"],
+    "zh": ["zho-Hans", "eng-Latn"],
+    "fr": ["fra-Latn", "eng-Latn"],
+    "es": ["spa-Latn", "eng-Latn"],
+    "pt": ["por-Latn", "eng-Latn"],
+    "ms": ["msa-Latn", "eng-Latn"],
+    "ko": ["kor-Hang", "eng-Latn"],
+    "tr": ["tur-Latn", "eng-Latn"],
+    "hi": ["hin-Deva", "eng-Latn"],
+    "cs": ["ces-Latn", "eng-Latn"],
+    "ja": ["jpn-Jpan", "eng-Latn"],
 }
 
 
@@ -35,19 +35,29 @@ class PubChemWikiPairClassification(AbsTaskPairClassification, MultilingualTask)
         eval_splits=["test"],
         eval_langs=_LANGUAGES,
         main_score="max_ap",
-        date=None,
+        date=("2024-06-01", "2024-11-30"),
         domains=["Chemistry"],
-        task_subtypes=None,
+        task_subtypes=[],
         license="cc-by-nc-sa-4.0",
         annotations_creators="derived",
-        dialect=None,
-        sample_creation=None,
+        dialect=[],
+        sample_creation="created",
         bibtex_citation="""
         @article{kasmaee2024chemteb,
         title={ChemTEB: Chemical Text Embedding Benchmark, an Overview of Embedding Models Performance \& Efficiency on a Specific Domain},
         author={Kasmaee, Ali Shiraee and Khodadad, Mohammad and Saloot, Mohammad Arshi and Sherck, Nick and Dokas, Stephen and Mahyar, Hamidreza and Samiee, Soheila},
         journal={arXiv preprint arXiv:2412.00532},
         year={2024}
+        }
+        @article{kim2023pubchem,
+        title={PubChem 2023 update},
+        author={Kim, Sunghwan and Chen, Jie and Cheng, Tiejun and Gindulyte, Asta and He, Jia and He, Siqian and Li, Qingliang and Shoemaker, Benjamin A and Thiessen, Paul A and Yu, Bo and others},
+        journal={Nucleic acids research},
+        volume={51},
+        number={D1},
+        pages={D1373--D1380},
+        year={2023},
+        publisher={Oxford University Press}
         }
         """,
     )

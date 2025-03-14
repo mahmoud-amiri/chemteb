@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import warnings
 from collections import defaultdict
 from time import time
 from typing import Any
@@ -319,6 +320,10 @@ class AbsTaskInstructionRetrieval(AbsTask):
         self.do_length_ablation = kwargs.get("do_length_ablation", False)
         if self.do_length_ablation:
             logger.info("Running length ablation also...")
+        warnings.warn(
+            "`AbsTaskInstructionRetrieval` will be merged with Retrieval in v2.0.0.",
+            DeprecationWarning,
+        )
 
     def load_data(self, **kwargs):
         if self.data_loaded:
@@ -374,9 +379,9 @@ class AbsTaskInstructionRetrieval(AbsTask):
                 doc["id"]: {"title": doc["title"], "text": doc["text"]}
                 for doc in corpus
             }
-            assert (
-                len(top_ranked) == len(queries)
-            ), f"Top ranked not loaded properly! Expected {len(self.queries)} but got {len(self.top_ranked)}."
+            assert len(top_ranked) == len(queries), (
+                f"Top ranked not loaded properly! Expected {len(self.queries)} but got {len(self.top_ranked)}."
+            )
 
             (
                 self.corpus[split],

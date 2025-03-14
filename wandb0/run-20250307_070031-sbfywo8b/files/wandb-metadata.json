@@ -1,0 +1,41 @@
+{
+  "os": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.31",
+  "python": "CPython 3.9.5",
+  "startedAt": "2025-03-07T06:00:31.333883Z",
+  "program": "/home/mahmoud/rag/chemteb/chem_eval.py",
+  "codePath": "chem_eval.py",
+  "git": {
+    "remote": "git@github.com:mahmoud-amiri/chemteb.git",
+    "commit": "da32c61b4cd3312de4882d5b765bcf2355c80689"
+  },
+  "email": "mahmoud.ipht@gmail.com",
+  "root": "/home/mahmoud/rag/chemteb",
+  "host": "ipc357",
+  "executable": "/home/mahmoud/rag/chemteb/myenv/bin/python3.9",
+  "codePathLocal": "chem_eval.py",
+  "cpu_count": 13,
+  "cpu_count_logical": 25,
+  "gpu": "NVIDIA RTX 6000 Ada Generation",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "2163361103872",
+      "used": "872520224768"
+    }
+  },
+  "memory": {
+    "total": "211073298432"
+  },
+  "cpu": {
+    "count": 13,
+    "countLogical": 25
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA RTX 6000 Ada Generation",
+      "memoryTotal": "51527024640",
+      "architecture": "Ada"
+    }
+  ],
+  "cudaVersion": "12.4"
+}

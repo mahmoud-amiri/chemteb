@@ -9,10 +9,9 @@ import numpy as np
 import torch
 from sentence_transformers import __version__ as st_version
 
+from mteb.encoder_interface import PromptType
 from mteb.model_meta import ModelMeta
-
-from ..encoder_interface import PromptType
-from .sentence_transformer_wrapper import SentenceTransformerWrapper
+from mteb.models.sentence_transformer_wrapper import SentenceTransformerWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -214,12 +213,260 @@ jina_embeddings_v3 = ModelMeta(
     open_weights=True,
     revision="215a6e121fa0183376388ac6b1ae230326bfeaed",
     release_date="2024-09-18",  # official release date
-    n_parameters=572 * 1e6,
+    n_parameters=int(572 * 1e6),
+    memory_usage_mb=1092,
     max_tokens=8194,
-    embed_dim=4096,
+    embed_dim=1024,
     license="cc-by-nc-4.0",
     similarity_fn_name="cosine",
     framework=["Sentence Transformers", "PyTorch"],
     use_instructions=True,
     reference="https://huggingface.co/jinaai/jina-embeddings-v3",
+    public_training_code=None,
+    public_training_data=None,
+    training_datasets={
+        # CulturaX
+        "STS12": [],
+        # "SICK": [],
+        # "WMT19": [],
+        # "MADLAD-3B": [],
+        # NLI
+        "MSMARCO": ["train"],
+        "MSMARCOHardNegatives": ["train"],
+        "NanoMSMARCORetrieval": ["train"],
+        "mMARCO-NL": ["train"],  # translation not trained on
+        "NQ": ["train"],
+        "NQHardNegatives": ["train"],
+        "NanoNQRetrieval": ["train"],
+        "NQ-PL": ["train"],  # translation not trained on
+        "NQ-NL": ["train"],  # translation not trained on
+        # oasst1, oasst2
+    },
+    adapted_from="XLM-RoBERTa",
+)
+
+jina_embeddings_v2_base_en = ModelMeta(
+    loader=partial(
+        SentenceTransformerWrapper,
+        model_name="jinaai/jina-embeddings-v2-base-en",
+        revision="6e85f575bc273f1fd840a658067d0157933c83f0",
+        trust_remote_code=True,
+    ),
+    name="jinaai/jina-embeddings-v2-base-en",
+    languages=["eng-Latn"],
+    open_weights=True,
+    revision="6e85f575bc273f1fd840a658067d0157933c83f0",
+    release_date="2023-09-27",
+    n_parameters=137_000_000,
+    memory_usage_mb=262,
+    embed_dim=768,
+    license="apache-2.0",
+    max_tokens=8192,
+    reference="https://huggingface.co/jinaai/jina-embeddings-v2-base-en",
+    similarity_fn_name="cosine",
+    framework=["Sentence Transformers", "PyTorch"],
+    use_instructions=False,
+    superseded_by=None,
+    adapted_from="jina-bert-base-en-v1",  # pretrained on C4 with Alibi to support longer context.
+    training_datasets={
+        "PAQ": ["train"],
+        "GooAQ": ["train"],
+        "WikiAnswers": ["train"],
+        "AmazonQA": ["train"],
+        "ELI5": ["train"],
+        "SentenceCompression": ["train"],
+        "SimpleWikipedia": ["train"],
+        "Specter": ["train"],
+        "Squad2": ["train"],
+        "Tmdb": ["train"],
+        "TrivialQA": ["train"],
+        "TweetQA": ["train"],
+        "WikiHow": ["train"],
+        "Xmarket": [],  # adopted from Cross-Market Recommendation (XMRec).
+        "S2ORC": [],  # title abstract pair.
+        "YahooAnswers": [],  # question answer pair.
+        "MSMARCO": ["train"],  # pairs and mined hard negative.
+        "StackExchange": [],  # title body pair.
+        "QuoraQA": ["train"],  # duplicate question pairs.
+        "MsCocoCaptions": ["train"],  # pairs describe the same image.
+        "Flickr30k": ["train"],  # pairs describe the same image.
+        "SNLI": ["train"],  # random negative.
+        "ESCI": ["train"],  # exact match as positive match and mined hard negative.
+        "NegationDataset": [
+            "train"
+        ],  # synthetically generated negation dataset https://huggingface.co/datasets/jinaai/negation-dataset
+        "NQ": ["train"],  # mined hard negative.
+        "HotpotQA": ["train"],  # mined hard negative.
+        "FEVER": ["train"],  # mined hard negative.
+        "CC-NEWS": [],  # title-content with random negative.
+    },
+    public_training_code=None,
+    public_training_data=None,
+)
+
+jina_embeddings_v2_small_en = ModelMeta(
+    loader=partial(
+        SentenceTransformerWrapper,
+        model_name="jinaai/jina-embeddings-v2-small-en",
+        revision="44e7d1d6caec8c883c2d4b207588504d519788d0",
+        trust_remote_code=True,
+    ),
+    name="jinaai/jina-embeddings-v2-small-en",
+    languages=["eng-Latn"],
+    open_weights=True,
+    revision="44e7d1d6caec8c883c2d4b207588504d519788d0",
+    release_date="2023-09-27",
+    n_parameters=32_700_000,
+    memory_usage_mb=62,
+    embed_dim=512,
+    license="apache-2.0",
+    max_tokens=8192,
+    reference="https://huggingface.co/jinaai/jina-embeddings-v2-small-en",
+    similarity_fn_name="cosine",
+    framework=["Sentence Transformers", "PyTorch"],
+    use_instructions=False,
+    superseded_by=None,
+    adapted_from="jina-bert-smalll-en-v1",  # pretrained on C4 with Alibi to support longer context
+    training_datasets={
+        "PAQ": ["train"],
+        "GooAQ": ["train"],
+        "WikiAnswers": ["train"],
+        "AmazonQA": ["train"],
+        "ELI5": ["train"],
+        "SentenceCompression": ["train"],
+        "SimpleWikipedia": ["train"],
+        "Specter": ["train"],
+        "Squad2": ["train"],
+        "Tmdb": ["train"],
+        "TrivialQA": ["train"],
+        "TweetQA": ["train"],
+        "WikiHow": ["train"],
+        "Xmarket": [],  # adopted from Cross-Market Recommendation (XMRec).
+        "S2ORC": [],  # title abstract pair.
+        "YahooAnswers": [],  # question answer pair.
+        "MSMARCO": ["train"],  # pairs and mined hard negative.
+        "StackExchange": [],  # title body pair.
+        "QuoraQA": ["train"],  # duplicate question pairs.
+        "MsCocoCaptions": ["train"],  # pairs describe the same image.
+        "Flickr30k": ["train"],  # pairs describe the same image.
+        "SNLI": ["train"],  # random negative.
+        "ESCI": ["train"],  # exact match as positive match and mined hard negative.
+        "NegationDataset": [
+            "train"
+        ],  # synthetically generated negation dataset https://huggingface.co/datasets/jinaai/negation-dataset
+        "NQ": ["train"],  # mined hard negative.
+        "HotpotQA": ["train"],  # mined hard negative.
+        "FEVER": ["train"],  # mined hard negative.
+        "CC-NEWS": [],  # title content with random negative.
+    },
+    public_training_code=None,
+    public_training_data=None,
+)
+
+jina_embedding_b_en_v1 = ModelMeta(
+    loader=partial(
+        SentenceTransformerWrapper,
+        model_name="jinaai/jina-embedding-b-en-v1",
+        revision="32aa658e5ceb90793454d22a57d8e3a14e699516",
+    ),
+    name="jinaai/jina-embedding-b-en-v1",
+    languages=["eng-Latn"],
+    open_weights=True,
+    revision="32aa658e5ceb90793454d22a57d8e3a14e699516",
+    release_date="2023-07-07",
+    n_parameters=110_000_000,
+    memory_usage_mb=420,
+    embed_dim=768,
+    license="apache-2.0",
+    max_tokens=512,
+    reference="https://huggingface.co/jinaai/jina-embedding-b-en-v1",
+    similarity_fn_name="cosine",
+    framework=["Sentence Transformers", "PyTorch"],
+    use_instructions=False,
+    superseded_by="jinaai/jina-embeddings-v2-base-en",
+    adapted_from="google-t5/t5-base",
+    training_datasets={
+        "PAQ": ["train"],
+        "GooAQ": ["train"],
+        "WikiAnswers": ["train"],
+        "AmazonQA": ["train"],
+        "ELI5": ["train"],
+        "SentenceCompression": ["train"],
+        "SimpleWikipedia": ["train"],
+        "Specter": ["train"],
+        "Squad2": ["train"],
+        "Tmdb": ["train"],
+        "TrivialQA": ["train"],
+        "TweetQA": ["train"],
+        "WikiHow": ["train"],
+        "Xmarket": [],  # adopted from Cross-Market Recommendation (XMRec).
+        "S2ORC": [],  # title abstract pair.
+        "YahooAnswers": [],  # question answer pair.
+        "MSMARCO": ["train"],  # pairs and mined hard negative.
+        "StackExchange": [],  # title body pair.
+        "QuoraQA": ["train"],  # duplicate question pairs.
+        "MsCocoCaptions": ["train"],  # pairs describe the same image.
+        "Flickr30k": ["train"],  # pairs describe the same image.
+        "SNLI": ["train"],  # random negative.
+        "ESCI": ["train"],  # exact match as positive match and mined hard negative.
+        "NegationDataset": [
+            "train"
+        ],  # synthetically generated negation dataset https://huggingface.co/datasets/jinaai/negation-dataset
+    },
+    public_training_code=None,
+    public_training_data=None,
+)
+
+jina_embedding_s_en_v1 = ModelMeta(
+    loader=partial(
+        SentenceTransformerWrapper,
+        model_name="jinaai/jina-embedding-s-en-v1",
+        revision="5ac6cd473e2324c6d5f9e558a6a9f65abb57143e",
+    ),
+    name="jinaai/jina-embedding-s-en-v1",
+    languages=["eng-Latn"],
+    open_weights=True,
+    revision="5ac6cd473e2324c6d5f9e558a6a9f65abb57143e",
+    release_date="2023-07-07",
+    n_parameters=35_000_000,
+    memory_usage_mb=134,
+    embed_dim=512,
+    license="apache-2.0",
+    max_tokens=512,
+    reference="https://huggingface.co/jinaai/jina-embedding-s-en-v1",
+    similarity_fn_name="cosine",
+    framework=["Sentence Transformers", "PyTorch"],
+    use_instructions=False,
+    superseded_by="jinaai/jina-embeddings-v2-small-en",
+    adapted_from="google-t5/t5-small",
+    training_datasets={
+        "PAQ": ["train"],
+        "GooAQ": ["train"],
+        "WikiAnswers": ["train"],
+        "AmazonQA": ["train"],
+        "ELI5": ["train"],
+        "SentenceCompression": ["train"],
+        "SimpleWikipedia": ["train"],
+        "Specter": ["train"],
+        "Squad2": ["train"],
+        "Tmdb": ["train"],
+        "TrivialQA": ["train"],
+        "TweetQA": ["train"],
+        "WikiHow": ["train"],
+        "Xmarket": [],  # adopted from Cross-Market Recommendation (XMRec).
+        "S2ORC": [],  # title abstract pair.
+        "YahooAnswers": [],  # question answer pair.
+        "MSMARCO": ["train"],  # pairs and mined hard negative.
+        "StackExchange": [],  # title body pair.
+        "QuoraQA": ["train"],  # duplicate question pairs.
+        "MsCocoCaptions": ["train"],  # pairs describe the same image.
+        "Flickr30k": ["train"],  # pairs describe the same image.
+        "SNLI": ["train"],  # random negative.
+        "ESCI": ["train"],  # exact match as positive match and mined hard negative.
+        "NegationDataset": [
+            "train"
+        ],  # synthetically generated negation dataset https://huggingface.co/datasets/jinaai/negation-dataset
+    },
+    public_training_code=None,
+    public_training_data=None,
 )
